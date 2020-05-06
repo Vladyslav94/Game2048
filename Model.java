@@ -1,19 +1,23 @@
 package Game2048;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class Model {
     private static final int FIELD_WIDTH = 4;
-    Tile[][] gameTiles;
+    private Tile[][] gameTiles;
     int score;
     int maxTile;
+    private Stack<Tile[][]> previousStates;
+    private Stack<Integer> previousScores;
+    private boolean isSaveNeeded = true;
 
     public Model() {
         gameTiles = new Tile[FIELD_WIDTH][FIELD_WIDTH];
         resetGameTiles();
         this.score = 0;
         this.maxTile = 0;
+        this.previousStates = new Stack<>();
+        this.previousScores = new Stack<>();
     }
 
     public Tile[][] getGameTiles() {
@@ -96,9 +100,9 @@ public class Model {
 
     void left() {
         boolean wasChanged = false;
-        for (Tile[] gameTile : gameTiles) {
-            wasChanged = compressTiles(gameTile) || wasChanged;
-            wasChanged = mergeTiles(gameTile) || wasChanged;
+        for (int row = 0; row < gameTiles.length; row++) {
+            wasChanged = compressTiles(gameTiles[row]) || wasChanged;
+            wasChanged = mergeTiles(gameTiles[row]) || wasChanged;
         }
         if (wasChanged) {
             addTile();
@@ -200,5 +204,24 @@ public class Model {
         }
         return canMove;
     }
+
+    private void saveState(Tile[][] tiles){
+        Tile[][] newGameTiles = new Tile[4][4];
+        for (int i = 0; i < FIELD_WIDTH; i++) {
+            System.arraycopy(gameTiles[i], 0, newGameTiles[i], 0, FIELD_WIDTH);
+        }
+        previousStates.push(newGameTiles);
+        previousScores.push(score);
+        isSaveNeeded = false;
+    }
+
+    public void rollback(){
+        if(!previousScores.isEmpty() && !previousStates.isEmpty()){
+            this.gameTiles = previousStates.pop();
+            this.score = previousScores.pop();
+        }
+    }
+
+
 
 }
