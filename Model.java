@@ -99,6 +99,9 @@ public class Model {
     }
 
     void left() {
+        if(isSaveNeeded){
+            saveState(gameTiles);
+        }
         boolean wasChanged = false;
         for (int row = 0; row < gameTiles.length; row++) {
             wasChanged = compressTiles(gameTiles[row]) || wasChanged;
@@ -107,9 +110,11 @@ public class Model {
         if (wasChanged) {
             addTile();
         }
+        isSaveNeeded = true;
     }
 
     void right() {
+        saveState(gameTiles);
         boolean wasChanged = false;
         Tile[][] temp = new Tile[4][4];
         int count = 0;
@@ -133,12 +138,17 @@ public class Model {
             count = 0;
         }
 
+
+
         if (wasChanged) {
             addTile();
         }
+
+        isSaveNeeded = true;
     }
 
     void down() {
+        saveState(gameTiles);
         for (int i = 0; i < FIELD_WIDTH / 2; i++) {
             for (int j = i; j < FIELD_WIDTH - i - 1; j++) {
                 Tile temp = gameTiles[i][j];
@@ -165,6 +175,7 @@ public class Model {
     }
 
     void up(){
+        saveState(gameTiles);
         for (int m = 0; m < 3; m++) {
             for (int i = 0; i < FIELD_WIDTH / 2; i++) {
                 for (int j = i; j < FIELD_WIDTH - i - 1; j++) {
@@ -207,9 +218,12 @@ public class Model {
 
     private void saveState(Tile[][] tiles){
         Tile[][] newGameTiles = new Tile[4][4];
-        for (int i = 0; i < FIELD_WIDTH; i++) {
-            System.arraycopy(gameTiles[i], 0, newGameTiles[i], 0, FIELD_WIDTH);
+        for (int i = 0; i < FIELD_WIDTH; i++){
+            for (int j = 0; j < FIELD_WIDTH; j++) {
+                newGameTiles[i][j] = new Tile(tiles[i][j].value);
+            }
         }
+
         previousStates.push(newGameTiles);
         previousScores.push(score);
         isSaveNeeded = false;
