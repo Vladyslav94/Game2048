@@ -186,4 +186,19 @@ public class Model {
         }
     }
 
+    public boolean canMove(){
+        if(getEmptyTiles().size() > 0)
+            return true;
+        boolean canMove = false;
+        for (int i = 0; i < gameTiles.length-1; i++) {
+            for (int j = 0; j < gameTiles[i].length-1; j++) {
+                if (gameTiles[i][j].value == gameTiles[i][j + 1].value || gameTiles[i + 1][j].value == gameTiles[i][j].value) {
+                    canMove = true;
+                    break;
+                }
+            }
+        }
+        return canMove;
+    }
+
 }
