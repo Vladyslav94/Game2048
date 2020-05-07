@@ -48,8 +48,12 @@ public class Controller extends KeyAdapter {
                 model.up();
             } else if(code == KeyEvent.VK_DOWN){
                 model.down();
+            } else if(code == KeyEvent.VK_Z){
+                model.rollback();
             } else if(code == KeyEvent.VK_R){
                 model.randomMove();
+            } else if(code == KeyEvent.VK_A){
+                model.autoMove();
             }
         }
 

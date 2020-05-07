@@ -7,8 +7,8 @@ public class Model {
     private Tile[][] gameTiles;
     int score;
     int maxTile;
-    private Stack<Tile[][]> previousStates;
-    private Stack<Integer> previousScores;
+    private final Stack<Tile[][]> previousStates;
+    private final Stack<Integer> previousScores;
     private boolean isSaveNeeded = true;
 
     public Model() {
@@ -103,9 +103,9 @@ public class Model {
             saveState(gameTiles);
         }
         boolean wasChanged = false;
-        for (int row = 0; row < gameTiles.length; row++) {
-            wasChanged = compressTiles(gameTiles[row]) || wasChanged;
-            wasChanged = mergeTiles(gameTiles[row]) || wasChanged;
+        for (Tile[] gameTile : gameTiles) {
+            wasChanged = compressTiles(gameTile) || wasChanged;
+            wasChanged = mergeTiles(gameTile) || wasChanged;
         }
         if (wasChanged) {
             addTile();
@@ -251,6 +251,40 @@ public class Model {
         }
     }
 
+    private boolean hasBoardChanged(){
+        for (int i = 0; i < FIELD_WIDTH; i++) {
+            for (int j = 0; j < FIELD_WIDTH; j++) {
+                if(gameTiles[i][j].value != previousStates.peek()[i][j].value){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
+    public MoveEfficiency getMoveEfficiency(Move move) {
+        move.move();
+        if (!hasBoardChanged()) {
+            rollback();
+            return new MoveEfficiency(-1, 0, move);
+        }
+
+        MoveEfficiency moveEfficiency = new MoveEfficiency(getEmptyTiles().size(), score, move);
+        rollback();
+        return moveEfficiency;
+    }
+
+    public void autoMove(){
+        PriorityQueue<MoveEfficiency> priorityQueue = new PriorityQueue<>(4, Collections.reverseOrder());
+        priorityQueue.offer(getMoveEfficiency(this::left));
+        priorityQueue.offer(getMoveEfficiency(this::right));
+        priorityQueue.offer(getMoveEfficiency(this::down));
+        priorityQueue.offer(getMoveEfficiency(this::up));
+
+
+        assert priorityQueue.peek() != null;
+        priorityQueue.peek().getMove().move();
+
+    }
 
 }

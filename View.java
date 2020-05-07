@@ -1,7 +1,11 @@
 package Game2048;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class View extends JPanel {
     private static final Color BG_COLOR = new Color(0xbbada0);
@@ -32,6 +36,9 @@ public class View extends JPanel {
         }
 
         g.drawString("Score: " + controller.getScore(), 140, 465);
+
+//        ImageIcon iconWon = new ImageIcon("C:\\Users\\Vladyslav\\IdeaProjects\\Training\\src\\Game2048\\firework.gif");
+//        ImageIcon iconLost = new ImageIcon("C:\\Users\\Vladyslav\\IdeaProjects\\Training\\src\\Game2048\\sadSmile.gif");
 
         if (isGameWon) {
             JOptionPane.showMessageDialog(this, "You've won!");
